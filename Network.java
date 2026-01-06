@@ -58,22 +58,23 @@ public class Network {
         User user2 = getUser(name2);
         if (user1 == null || user2 == null)
             return false;
-        return (user1.addFollowee(name2) && user2.addFollowee(name1));
+        return user1.addFollowee(name2);
     }
     
     /** For the user with the given name, recommends another user to follow. The recommended user is
      *  the user that has the maximal mutual number of followees as the user with the given name. */
     public String recommendWhoToFollow(String name) {
-        User toFollow = null;
         User current = getUser(name);
-        int[] mutuals = new int[current.getfCount()];
+        int[] mutuals = new int[userCount];
         int maxIndex = 0;
         for (int i = 0; i < mutuals.length; i++) {
-            mutuals[i] = current.countMutual(getUser(current.getfFollows()[i]));
-            if (!current.isFriendOf(getUser(current.getfFollows()[i])) && mutuals[i] < mutuals[maxIndex])
+            if (current.getName().equals(users[i].getName()) || current.follows(users[i].getName()))
+                continue;
+            mutuals[i] = current.countMutual(users[i]);
+            if (mutuals[i] > mutuals[maxIndex])
                 maxIndex = i;
         }
-        return toFollow.getName();
+        return users[maxIndex].getName();
     }
 
     /** Computes and returns the name of the most popular user in this network: 
@@ -83,7 +84,7 @@ public class Network {
         int maxIndex = 0;
         for (int i = 0; i < fCount.length; i++) {
             fCount[i] = followeeCount(users[i].getName());
-            if (fCount[i] < fCount[maxIndex])
+            if (fCount[i] > fCount[maxIndex])
                 maxIndex = i;
         }
         return users[maxIndex].getName();
@@ -96,7 +97,7 @@ public class Network {
         for (int i = 0; i < userCount; i++) {
             if (users[i].getName().equals(name))
                 continue;
-            for (int j = 0; j < users[i].getfFollows().length; j++) {
+            for (int j = 0; j < users[i].getfCount(); j++) {
                 if (users[i].getfFollows()[j].equals(name))
                     count++;
             }
