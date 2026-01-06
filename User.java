@@ -43,8 +43,8 @@
 
     /** If this user follows the given name, returns true; otherwise returns false. */
     public boolean follows(String name) {
-        for (int i = 0; i < follows.length; i++) {
-            if (follows[i].equals(name))
+        for (int i = 0; i < fCount; i++) {
+            if (this.follows[i].equals(name))
                 return true;
         }
         return false;
@@ -52,14 +52,10 @@
     /** Makes this user follow the given name. If successful, returns true. 
      *  If this user already follows the given name, or if the follows list is full, does nothing and returns false; */
     public boolean addFollowee(String name) {
-        if (this.follows(name) || follows.length == maxfCount)
+        if (this.follows(name) || fCount == maxfCount)
             return false;
-        String[] temp = new String[follows.length + 1];
-        for (int i = 0; i < follows.length; i++) {
-            temp[i] = follows[i];
-        }
-        temp[temp.length - 1] = name;
-        this.follows = temp;
+        this.follows[fCount] = name;
+        this.fCount++;
         return true;
     }
 
@@ -68,23 +64,19 @@
     public boolean removeFollowee(String name) {
         if (!this.follows(name))
             return false;
+        
         int toRemove = -1;
-        String[] temp = new String[follows.length - 1];
-        for (int i = 0; i < follows.length; i++) {
-            if (follows[i] == name) {
+        for (int i = 0; i < fCount; i++) {
+            if (this.follows[i].equals(name)) {
                 toRemove = i;
+                break;
             }
-            break;
+        }        
+        for (int i = toRemove; i < fCount - 1; i++) {
+            follows[i] = follows[i + 1];
         }
-        for (int i = 0; i < follows.length; i++) {
-            if (i == toRemove)
-                continue;
-            if (i < toRemove)
-                temp[i] = follows[i];
-            else
-                temp[i - 1] = follows[i];
-        }
-        this.follows = temp;
+        follows[fCount - 1] = null;
+        fCount--;
         return true;
     }
 
@@ -92,7 +84,7 @@
     /*  Notice: This is the size of the intersection of the two follows lists. */
     public int countMutual(User other) {
         int counter = 0;
-        for (int i = 0; i < this.follows.length; i++) {
+        for (int i = 0; i < this.fCount; i++) {
             if (other.follows(this.follows[i]))
                 counter++;
         }

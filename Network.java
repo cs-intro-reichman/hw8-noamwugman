@@ -30,7 +30,7 @@ public class Network {
      *  If there is no such user, returns null.
      *  Notice that the method receives a String, and returns a User object. */
     public User getUser(String name) {
-        for (int i = 0; i < users.length; i++) {
+        for (int i = 0; i < userCount; i++) {
             if (users[i].getName().equals(name))
                 return users[i];
         }
@@ -42,16 +42,12 @@ public class Network {
     *  If the given name is already a user in this network, does nothing and returns false;
     *  Otherwise, creates a new user with the given name, adds the user to this network, and returns true. */
     public boolean addUser(String name) {
-        if (getUser(name) != null || userCount == users.length) {
+        if (getUser(name) != null || userCount >= users.length) {
             return false;
         }
-        for (int i = 0; i < users.length; i++) {
-            if (users[i] == null) {
-                users[i] = new User(name);
-                return true;
-            }
-        }
-        return false;
+        this.users[userCount] = new User(name);
+        this.userCount++;
+        return true;
     }
 
     /** Makes the user with name1 follow the user with name2. If successful, returns true.
@@ -97,7 +93,7 @@ public class Network {
      *  the users in this network. Note: A name can appear 0 or 1 times in each list. */
     private int followeeCount(String name) {
         int count = 0;
-        for (int i = 0; i < users.length; i++) {
+        for (int i = 0; i < userCount; i++) {
             if (users[i].getName().equals(name))
                 continue;
             for (int j = 0; j < users[i].getfFollows().length; j++) {
@@ -110,8 +106,8 @@ public class Network {
 
     // Returns a textual description of all the users in this network, and who they follow.
     public String toString() {
-        String str = "";
-        for (int i = 0; i < users.length; i++) {
+        String str = "Network: \n";
+        for (int i = 0; i < userCount; i++) {
             str += users[i].toString() + "\n";
         }
         return str;
